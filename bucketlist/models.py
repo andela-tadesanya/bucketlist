@@ -56,6 +56,9 @@ class User(Base):
         user = User.query.get(data['id'])
         return user
 
+    def __repr__(self):
+        return '<User %r>' % (self.username)
+
 
 class BucketList(Base):
     __tablename__ = 'bucketlists'
@@ -68,7 +71,8 @@ class BucketList(Base):
     created_by = Column(Integer, ForeignKey('user.id'), nullable=True)
 
     # declare relationships
-    app_user = relationship('User', backref=backref('bucketlists', order_by=id))
+    app_user = relationship('User',
+                            backref=backref('bucketlists', order_by=id))
     app_bucketlist_items = relationship(
                          'BucketListItem',
                          order_by='BucketListItem.id',
@@ -78,6 +82,9 @@ class BucketList(Base):
     def __init__(self, name=None, created_by=None):
         self.name = name
         self.created_by = created_by
+
+    def __repr__(self):
+        return '<BucketList %d:%r>' % (self.id, self.name)
 
 
 class BucketListItem(Base):
@@ -93,7 +100,8 @@ class BucketListItem(Base):
 
     # declare relationships
     app_bucketlist = relationship('BucketList',
-                                  backref=backref('bucketlist_item', order_by=id))
+                                  backref=backref('bucketlist_item',
+                                                  order_by=id))
 
     def __init__(self, name=None, bucket_list=None):
         self.name = name
@@ -108,6 +116,9 @@ class BucketListItem(Base):
         '''sets done to false'''
         self.done = False
 
+    def __repr__(self):
+        return '<BucketListItem %d:%r>' % (self.id, self.name)
+
 
 # generate marshmallow schemas
 class BucketListItemSchema(ModelSchema):
@@ -118,7 +129,8 @@ class BucketListItemSchema(ModelSchema):
 
 class BucketListSchema(ModelSchema):
     class Meta:
-        fields = ('id', 'name', 'date_created', 'date_modified', 'app_bucketlist_items', 'created_by')
+        fields = ('id', 'name', 'date_created',
+                  'date_modified', 'app_bucketlist_items', 'created_by')
         model = BucketList
     app_bucketlist_items = fields.Nested(BucketListItemSchema, many=True)
 
