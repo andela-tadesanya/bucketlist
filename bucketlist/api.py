@@ -34,10 +34,11 @@ def login_required(f):
     return verify_token
 
 
-# function to get a bucketlist
 def get_bucketlist(user, bucketlist_id):
-    # get the bucketlist
-    query = db_session.query(BucketList).filter_by(created_by=user.id).filter_by(id=bucketlist_id)
+    '''function to get a bucketlist'''
+    query = db_session.query(BucketList).\
+            filter_by(created_by=user.id).\
+            filter_by(id=bucketlist_id)
     try:
         bl = query.one()
     except NoResultFound:
@@ -47,10 +48,11 @@ def get_bucketlist(user, bucketlist_id):
     return bl
 
 
-# function to get a bucketlist item
 def get_bucketlist_item(bucketlist, bucketlistitem_id):
-    # get the bucketlist item
-    query = db_session.query(BucketListItem).filter_by(bucket_list=bucketlist.id).filter_by(id=bucketlistitem_id)
+    '''function to get a bucketlist item'''
+    query = db_session.query(BucketListItem).\
+            filter_by(bucket_list=bucketlist.id).\
+            filter_by(id=bucketlistitem_id)
     try:
         bl_item = query.one()
     except NoResultFound:
@@ -59,9 +61,11 @@ def get_bucketlist_item(bucketlist, bucketlistitem_id):
         abort(409, message='multiply bucketlists with this id found')
     return bl_item
 
+
 class AppUsers(Resource):
 
     def post(self):
+        '''creates a user'''
         self.username = request.form['username']
         self.password = request.form['password']
 
@@ -83,6 +87,7 @@ class AppUsers(Resource):
 
     @login_required
     def get(self):
+        '''returns a user'''
         usr = g.user
         schema = UserSchema()
         return schema.dump(usr).data, 200
@@ -157,7 +162,9 @@ class BucketLists(Resource):
 
         # get the bucketlists and implement search if required
         if 'q' in request.args:
-            query = db_session.query(BucketList).filter_by(created_by=usr_id).filter(BucketList.name.like('%'+request.args['q']+'%'))
+            query = db_session.query(BucketList).\
+                    filter_by(created_by=usr_id).\
+                    filter(BucketList.name.like('%'+request.args['q']+'%'))
             paginator = Paginator(query, limit)
             current_page = paginator.page(page)
             bucketlists = current_page.object_list
@@ -300,8 +307,19 @@ class BucketListItemResource(Resource):
 
 
 # create resource mappings
-api.add_resource(AppUsers, '/api/v1.0/users', endpoint='api_users')
-api.add_resource(Login, '/api/v1.0/auth/login', endpoint='api_login')
-api.add_resource(BucketLists, '/api/v1.0/bucketlists', endpoint='api_bucketlists')
-api.add_resource(BucketListSingle, '/api/v1.0/bucketlists/<int:id>', endpoint='api_bucketlist')
-api.add_resource(BucketListItemResource, '/api/v1.0/bucketlists/<int:id>/items', '/api/v1.0/bucketlists/<int:id>/items/<int:item_id>', endpoint='api_bucketlist_item')
+api.add_resource(AppUsers,
+                 '/api/v1.0/users',
+                 endpoint='api_users')
+api.add_resource(Login,
+                 '/api/v1.0/auth/login',
+                 endpoint='api_login')
+api.add_resource(BucketLists,
+                 '/api/v1.0/bucketlists',
+                 endpoint='api_bucketlists')
+api.add_resource(BucketListSingle,
+                 '/api/v1.0/bucketlists/<int:id>',
+                 endpoint='api_bucketlist')
+api.add_resource(BucketListItemResource,
+                 '/api/v1.0/bucketlists/<int:id>/items',
+                 '/api/v1.0/bucketlists/<int:id>/items/<int:item_id>',
+                 endpoint='api_bucketlist_item')

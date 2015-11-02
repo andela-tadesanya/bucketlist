@@ -1,247 +1,254 @@
-import os
 import bucketlist
 import unittest
-import tempfile
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-import bucketlist.models
+from bucketlist import create_app
+from bucketlist.database import init_db, db_session, drop_db
+import json
 
 
 class BucketListTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.db_file, self.db_name = tempfile.mkstemp()
-        db = 'sqlite:///%s' % (self.db_name)
-        engine = create_engine(db, convert_unicode=True)
-        db_session = scoped_session(sessionmaker(
-                                                autocommit=False,
-                                                autoflush=False,
-                                                bind=engine
-                                                ))
-        Base = declarative_base()
-        Base.query = db_session.query_property()
-        Base.metadata.create_all(bind=engine)
-        self.app = bucketlist.app.test_client()
+    @classmethod
+    def setUpClass(self):
+        self.app = create_app('test_config.py')
+        init_db()
+        self.client = bucketlist.app.test_client()
 
-    def tearDown(self):
-        os.close(self.db_file)
-        os.unlink(self.db_name)
+    @classmethod
+    def tearDownClass(self):
+        db_session.close()
+        db_session.remove()
+        drop_db()
 
     def get_token(self):
         '''generates a token'''
-        rv = self.app.post('/api/v1.0/auth/login',
-                           data={
+        rv = self.client.post('/api/v1.0/auth/login',
+                              data={
                                 'username': 'testuser',
                                 'password': 'password',
-                            })
-        return rv.data['token']
+                              })
+        resp = json.loads(rv.data)
+        return resp['token']
 
-    def test_create_user(self):
+    def test_01_create_user(self):
         '''test if user can be created'''
-        rv = self.app.post('/api/v1.0/users', data={
+        rv = self.client.post('/api/v1.0/users', data={
             'username': 'testuser',
             'password': 'password'
             })
-        assert 'username' in rv.data
-        assert 'id' in rv.data
-        assert 'app_bucket_listing' in rv.data
+        resp = json.loads(rv.data)
+        assert rv.status_code == 200
+        assert 'username' in resp
+        assert 'id' in resp
+        assert 'app_bucket_listing' in resp
 
-    def test_create_token(self):
+    def test_02_create_token(self):
         '''test token creation'''
-        rv = self.app.post('/api/v1.0/auth/login',
-                           data={
-                            'username': 'testuser',
-                            'password': 'password',
-                           })
-        assert 'token' in rv.data
-        assert len(rv.data['token']) == 122
+        rv = self.client.post('/api/v1.0/auth/login',
+                              data={
+                                'username': 'testuser',
+                                'password': 'password',
+                              })
+        resp = json.loads(rv.data)
+        assert 'token' in resp
+        assert len(resp['token']) == 122
 
-    def test_invalid_token(self):
+    def test_03_invalid_token(self):
         '''test when an invalid token is sent'''
-        rv = self.app.get('/api/v1.0/users',
-                          header={
-                            'token': 'uguguiguiguigugugiguiig'
-                          })
+        rv = self.client.get('/api/v1.0/users',
+                             headers={
+                                'token': 'uguguiguiguigugugiguiig'
+                             })
         assert rv.status_code == 403
 
-    def test_no_token(self):
+    def test_04_no_token(self):
         '''test when token is not provided'''
-        rv = self.app.get('/api/v1.0/users')
+        rv = self.client.get('/api/v1.0/users')
         assert rv.status_code == 401
 
-    def test_valid_token(self):
+    def test_05_valid_token(self):
         '''test if user can use token'''
         token = self.get_token()
-        rv = self.app.get('/api/v1.0/users',
-                          header={
-                            'token': token
-                          })
+        rv = self.client.get('/api/v1.0/users',
+                             headers={
+                                'token': token
+                             })
         assert rv.status_code == 200
 
-    def test_create_bucketlist(self):
+    def test_06_create_bucketlist(self):
         '''test creating a bucketlist'''
         token = self.get_token()
-        rv = self.app.post('/api/v1.0/bucketlists',
-                           data={
+        rv = self.client.post('/api/v1.0/bucketlists',
+                              data={
                                 'name': 'list1'
-                           },
-                           header={
+                              },
+                              headers={
                                 'token': token
-                           })
-        assert 'app_bucketlist_items' in rv.data
-        assert 'created_by' in rv.data
-        assert 'date_created' in rv.data
-        assert 'date_modified' in rv.data
-        assert 'id' in rv.data
-        assert 'name' in rv.data
-        assert rv.data['date_created'] != rv.data['date_modified']
+                              })
+        resp = json.loads(rv.data)
+        assert 'app_bucketlist_items' in resp
+        assert 'created_by' in resp
+        assert 'date_created' in resp
+        assert 'date_modified' in resp
+        assert 'id' in resp
+        assert 'name' in resp
+        assert resp['date_created'] == resp['date_modified']
 
-    def test_get_bucketlists(self):
+    def test_07_get_bucketlists(self):
         '''test fetching a bucketlist'''
         token = self.get_token()
-        rv = self.app.get('/api/v1.0/bucketlists',
-                          header={
+        rv = self.client.get('/api/v1.0/bucketlists',
+                             headers={
                                 'token': token
-                          })
-        assert 'bucketlists' in rv.data
-        assert 'current_page' in rv.data
-        assert 'has_next_page' in rv.data
-        assert 'has_previous_page' in rv.data
-        assert 'total_objects' in rv.data
-        assert 'total_pages' in rv.data
-        assert len(rv.data['bucketlists']) > 0
+                             })
+        resp = json.loads(rv.data)
+        assert 'bucketlists' in resp
+        assert 'current_page' in resp
+        assert 'has_next_page' in resp
+        assert 'has_previous_page' in resp
+        assert 'total_objects' in resp
+        assert 'total_pages' in resp
 
-    def test_get_bucketlists_pagination(self):
+        assert len(resp['bucketlists']) > 0
+
+    def test_08_get_bucketlists_pagination(self):
         '''test fetching a bucketlist with pagination'''
         token = self.get_token()
-        rv = self.app.get('/api/v1.0/bucketlists?limit=1&page=1',
-                          header={
+        rv = self.client.get('/api/v1.0/bucketlists?limit=1&page=1',
+                             headers={
                                 'token': token
-                          })
-        assert 'bucketlists' in rv.data
-        assert 'current_page' in rv.data
-        assert 'has_next_page' in rv.data
-        assert 'has_previous_page' in rv.data
-        assert 'total_objects' in rv.data
-        assert 'total_pages' in rv.data
-        assert len(rv.data['bucketlists']) == 1
+                             })
+        resp = json.loads(rv.data)
+        assert 'bucketlists' in resp
+        assert 'current_page' in resp
+        assert 'has_next_page' in resp
+        assert 'has_previous_page' in resp
+        assert 'total_objects' in resp
+        assert 'total_pages' in resp
+        assert len(resp['bucketlists']) == 1
 
-    def test_get_bucketlists_with_query(self):
+    def test_09_get_bucketlists_with_query(self):
         '''test fetching a bucketlist by query'''
         token = self.get_token()
-        rv = self.app.get('/api/v1.0/bucketlists?q=list1',
-                          header={
+        rv = self.client.get('/api/v1.0/bucketlists?q=list1',
+                             headers={
                                 'token': token
-                          })
-        assert 'bucketlists' in rv.data
-        assert 'current_page' in rv.data
-        assert 'has_next_page' in rv.data
-        assert 'has_previous_page' in rv.data
-        assert 'total_objects' in rv.data
-        assert 'total_pages' in rv.data
-        assert len(rv.data['bucketlists']) == 1
-        assert rv.data['bucketlists']['name'] == 'list1'
+                             })
+        resp = json.loads(rv.data)
+        assert 'bucketlists' in resp
+        assert 'current_page' in resp
+        assert 'has_next_page' in resp
+        assert 'has_previous_page' in resp
+        assert 'total_objects' in resp
+        assert 'total_pages' in resp
+        assert len(resp['bucketlists']) == 1
+        assert resp['bucketlists'][0]['name'] == 'list1'
 
-    def test_get_bucketlist_item(self):
+    def test_10_get_bucketlist_item(self):
         '''test getting a bucketlist item'''
         token = self.get_token()
-        rv = self.app.get('/api/v1.0/bucketlists/1',
-                          header={
+        rv = self.client.get('/api/v1.0/bucketlists/1',
+                             headers={
                                 'token': token
-                          })
-        assert 'app_bucketlist_items' in rv.data
-        assert 'created_by' in rv.data
-        assert 'date_created' in rv.data
-        assert 'date_modified' in rv.data
-        assert 'id' in rv.data
-        assert 'name' in rv.data
-        assert rv.data['id'] == 1
-        assert rv.data['created_by'] == 1
+                             })
+        resp = json.loads(rv.data)
+        assert 'app_bucketlist_items' in resp
+        assert 'created_by' in resp
+        assert 'date_created' in resp
+        assert 'date_modified' in resp
+        assert 'id' in resp
+        assert 'name' in resp
+        assert resp['id'] == 1
+        assert resp['created_by'] == 1
 
-    def test_update_bucketlist(self):
+    def test_11_update_bucketlist(self):
         '''test update of a bucketlist'''
         token = self.get_token()
-        rv = self.app.put('/api/v1.0/bucketlists/1',
-                          header={
-                            'token': token
-                          },
-                          data={
-                            'name': 'list2'
-                          })
-        assert 'app_bucketlist_items' in rv.data
-        assert 'created_by' in rv.data
-        assert 'date_created' in rv.data
-        assert 'date_modified' in rv.data
-        assert 'id' in rv.data
-        assert 'name' in rv.data
-        assert rv.data['name'] == 'list2'
-        assert rv.data['id'] == 1
-        assert rv.data['created_by'] == 1
-        assert rv.data['date_created'] != rv.data['date_modified']
+        rv = self.client.put('/api/v1.0/bucketlists/1',
+                             headers={
+                               'token': token
+                             },
+                             data={
+                               'name': 'list2'
+                             })
+        resp = json.loads(rv.data)
+        assert 'app_bucketlist_items' in resp
+        assert 'created_by' in resp
+        assert 'date_created' in resp
+        assert 'date_modified' in resp
+        assert 'id' in resp
+        assert 'name' in resp
+        assert resp['name'] == 'list2'
+        assert resp['id'] == 1
+        assert resp['created_by'] == 1
+        assert resp['date_created'] != resp['date_modified']
 
-    def test_create_bucketlist_item(self):
+    def test_12_create_bucketlist_item(self):
         '''test creation of a bucketlist item'''
         token = self.get_token()
-        rv = self.app.post('/api/v1.0/bucketlists/1/items',
-                           header={
-                            'token': token
-                           },
-                           data={
-                            'name': 'listitem1'
-                           })
-        assert 'name' in rv.data
-        assert 'done' in rv.data
-        assert 'date_created' in rv.data
-        assert 'date_modified' in rv.data
-        assert 'id' in rv.data
-        assert rv.data['date_created'] == rv.data['date_modified']
-        assert rv.data['name'] == 'listitem1'
+        rv = self.client.post('/api/v1.0/bucketlists/1/items',
+                              headers={
+                                'token': token
+                              },
+                              data={
+                                'name': 'listitem1'
+                              })
+        resp = json.loads(rv.data)
+        assert 'name' in resp
+        assert 'done' in resp
+        assert 'date_created' in resp
+        assert 'date_modified' in resp
+        assert 'id' in resp
+        assert resp['date_created'] == resp['date_modified']
+        assert resp['name'] == 'listitem1'
 
-    def test_update_bucketlist_item(self):
+    def test_13_update_bucketlist_item(self):
         '''test if bucketlist item can be updated'''
         token = self.get_token()
-        rv = self.app.put('/api/v1.0/bucketlists/1/items/1',
-                          header={
-                            'token': token
-                           },
-                          data={
-                            'name': 'listitem2',
-                            'done': 'true'
-                           })
-        assert 'name' in rv.data
-        assert 'done' in rv.data
-        assert 'date_created' in rv.data
-        assert 'date_modified' in rv.data
-        assert 'id' in rv.data
-        assert rv.data['date_created'] != rv.data['date_modified']
-        assert rv.data['name'] == 'listitem2'
-        assert rv.data['done'] == 'true'
-
-    def test_delete_bucketlist_item(self):
-        '''delete bucketlist item'''
-        token = self.get_token()
-        rv = self.app.delete('/api/v1.0/bucketlists/1/items/1',
-                             header={
+        rv = self.client.put('/api/v1.0/bucketlists/1/items/1',
+                             headers={
                                 'token': token
-                               },
+                             },
                              data={
                                 'name': 'listitem2',
                                 'done': 'true'
-                               })
-        assert 'message' in rv.data
-        assert rv.data['message'] == 'bucketlist item deleted'
+                             })
+        resp = json.loads(rv.data)
+        assert 'name' in resp
+        assert 'done' in resp
+        assert 'date_created' in resp
+        assert 'date_modified' in resp
+        assert 'id' in resp
+        assert resp['date_created'] != resp['date_modified']
+        assert resp['name'] == 'listitem2'
+        assert resp['done'] is True
+
+    def test_14_delete_bucketlist_item(self):
+        '''delete bucketlist item'''
+        token = self.get_token()
+        rv = self.client.delete('/api/v1.0/bucketlists/1/items/1',
+                                headers={
+                                  'token': token
+                                },
+                                data={
+                                    'name': 'listitem2',
+                                    'done': 'true'
+                                })
+        resp = json.loads(rv.data)
+        assert 'message' in resp
+        assert resp['message'] == 'bucketlist item deleted'
         assert rv.status_code == 200
 
-    def test_delete_bucketlist(self):
+    def test_15_delete_bucketlist(self):
         '''test deleting a bucketlist'''
         token = self.get_token()
-        rv = self.app.delete('/api/v1.0/bucketlists/1',
-                             header={
-                                'token': token
-                             })
-        assert 'message' in rv.data
-        assert rv.data['message'] == 'bucketlist deleted'
+        rv = self.client.delete('/api/v1.0/bucketlists/1',
+                                headers={
+                                    'token': token
+                                })
+        resp = json.loads(rv.data)
+        assert 'message' in resp
+        assert resp['message'] == 'bucketlist deleted'
+
         assert rv.status_code == 200
 
 if __name__ == '__main__':
