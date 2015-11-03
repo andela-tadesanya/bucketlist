@@ -1,7 +1,6 @@
-![bucketlist logo](http://s27.postimg.org/fdhwsdoqr/Bucket_List_logo.png)
+![bucketlist logo](http://s27.postimg.org/fdhwsdoqr/Bucket_List_logo.png) 
 
-[![Coverage Status](https://coveralls.io/repos/andela-tadesanya/bucketlist/badge.svg?branch=master&service=github)](https://coveralls.io/github/andela-tadesanya/bucketlist?branch=master)
-
+[![Coverage Status](https://coveralls.io/repos/andela-tadesanya/bucketlist/badge.svg?branch=master&service=github)](https://coveralls.io/github/andela-tadesanya/bucketlist?branch=master) [![Build Status](https://travis-ci.org/andela-tadesanya/bucketlist.svg?branch=master)](https://travis-ci.org/andela-tadesanya/bucketlist)
 # INTRODUCTION
 Bucketlist is an API built using flask, where users can create and manage their bucketlists.
 
@@ -105,7 +104,8 @@ Tokens are used for authentication. You first create a user and create a token w
 
 
 # TESTS
-Run `coverage run test_bucketlist.py`
+Run `coverage run test_bucketlist.py`. 
+
 
 # CREDITS
 God and my two guardian angels(:angel: Google and Stackoverflow:angel:).
