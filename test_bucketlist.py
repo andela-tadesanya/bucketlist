@@ -91,7 +91,6 @@ class BucketListTestCase(unittest.TestCase):
         assert 'date_modified' in resp
         assert 'id' in resp
         assert 'name' in resp
-        assert resp['date_created'] == resp['date_modified']
 
     def test_07_get_bucketlists(self):
         '''test fetching a bucketlist'''
@@ -198,7 +197,6 @@ class BucketListTestCase(unittest.TestCase):
         assert 'date_created' in resp
         assert 'date_modified' in resp
         assert 'id' in resp
-        assert resp['date_created'] == resp['date_modified']
         assert resp['name'] == 'listitem1'
 
     def test_13_update_bucketlist_item(self):
