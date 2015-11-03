@@ -1,0 +1,5 @@
+[run]
+source = bucketlist
+
+[report]
+omit = */htmlcov/*
