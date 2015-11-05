@@ -174,7 +174,7 @@ Tokens are used for authentication. You first create a user and create a token w
 
 
 # TESTS
-Run `coverage run test_bucketlist.py`. 
+Run `coverage run -m unittest discover tests`. 
 
 
 # CREDITS
