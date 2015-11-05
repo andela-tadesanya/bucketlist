@@ -30,6 +30,13 @@ Request Body:
     'username': 'kitty',
     'password': 'wildcat',
 }
+
+Response:
+{
+  "app_bucket_listing": [],
+  "id": 1,
+  "username": "kitty"
+}
 ```
 
 ![create a user with Postman](https://gyazo.com/048a496936c0da43e46543ff85d43dba.gif)
@@ -42,6 +49,11 @@ Request Body:
 {
     'username': 'kitty',
     'password': 'wildcat',
+}
+
+Response:
+{
+  "token": "eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjczMzkzMSwiaWF0IjoxNDQ2NzMyNzMxfQ.eyJpZCI6MX0.V-e2exs8HOmM_qr8y5w7FgzUaRhlq1GVPZzHtJ0BWQs"
 }
 ```
 ![get a token with Postman](https://gyazo.com/d23c8293f95e2207a870cd6405012cf5.gif)
@@ -59,6 +71,16 @@ Request Body:
 {
     'name': 'Before I die',
 }
+
+Response:
+{
+  "app_bucketlist_items": [],
+  "created_by": 1,
+  "date_created": "2015-11-05T15:14:14.851000+00:00",
+  "date_modified": "2015-11-05T15:14:14.851000+00:00",
+  "id": 1,
+  "name": "Before I die"
+}
 ```
 
 ![create a bucketlist with Postman](https://gyazo.com/fe71f081a020a9f8cd222e0242a7848c.gif)
@@ -71,6 +93,25 @@ Request Header:
 {
     'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
 }
+
+Response:
+{
+  "bucketlists": [
+    {
+      "app_bucketlist_items": [],
+      "created_by": 1,
+      "date_created": "2015-11-05T15:14:14.851000+00:00",
+      "date_modified": "2015-11-05T15:14:14.851000+00:00",
+      "id": 1,
+      "name": "Before I die"
+    }
+  ],
+  "current_page": 1,
+  "has_next_page": false,
+  "has_previous_page": false,
+  "total_objects": 1,
+  "total_pages": 1
+}
 ```
 
 ![get all bucketlists with Postman](https://gyazo.com/342f0f3e927e3926e5675f2a533f6458.gif)
@@ -82,6 +123,16 @@ GET http://127.0.0.1:5000/api/v1.0/bucketlists/<int:id>
 Request Header:
 {
     'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Response:
+{
+  "app_bucketlist_items": [],
+  "created_by": 1,
+  "date_created": "2015-11-05T15:14:14.851000+00:00",
+  "date_modified": "2015-11-05T15:14:14.851000+00:00",
+  "id": 1,
+  "name": "Before I die"
 }
 ```
 
@@ -100,6 +151,16 @@ Request Body:
 {
     'name': 'Before I live',
 }
+
+Response:
+{
+  "app_bucketlist_items": [],
+  "created_by": 1,
+  "date_created": "2015-11-05T15:14:14.851000+00:00",
+  "date_modified": "2015-11-05T15:19:05.340000+00:00",
+  "id": 1,
+  "name": "Before I live"
+}
 ```
 
 ![update a bucketlist with Postman](https://gyazo.com/b07ef55c62e2dd79e3ede469c7529ae4.gif)
@@ -116,6 +177,15 @@ Request Header:
 Request Body:
 {
     'name': 'learn to program',
+}
+
+Response:
+{
+  "date_created": "2015-11-05T15:20:57.454000+00:00",
+  "date_modified": "2015-11-05T15:20:57.454000+00:00",
+  "done": false,
+  "id": 1,
+  "name": "learn to program"
 }
 ```
 
@@ -135,6 +205,15 @@ Request Body:
     'name': 'learn to dance',
     'done': 'true'
 }
+
+Response:
+{
+  "date_created": "2015-11-05T15:20:57.454000+00:00",
+  "date_modified": "2015-11-05T15:23:21.516000+00:00",
+  "done": true,
+  "id": 1,
+  "name": "learn to dance"
+}
 ```
 
 ![update a bucketlist item with Postman](https://gyazo.com/71967a8ba3827113b10309f1e64a5db1.gif)
@@ -147,6 +226,11 @@ Request Header:
 {
     'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
 }
+
+Response:
+{
+  "message": "bucketlist item deleted"
+}
 ```
 
 ![delete a bucketlist item with Postman](https://gyazo.com/703bdf0856a763cff16448a43306b1a7.gif)
@@ -158,6 +242,11 @@ DELETE http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`
 Request Header:
 {
     'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Response:
+{
+  "message": "bucketlist deleted"
 }
 ```
 
@@ -174,7 +263,7 @@ Tokens are used for authentication. You first create a user and create a token w
 
 
 # TESTS
-Run `coverage run -m unittest discover tests`. 
+Run `coverage run test_bucketlist.py`. 
 
 
 # CREDITS
