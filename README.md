@@ -116,6 +116,36 @@ Response:
 
 ![get all bucketlists with Postman](https://gyazo.com/342f0f3e927e3926e5675f2a533f6458.gif)
 
+### Display All Bucketlists With Query, Limit and Page
+```bash
+GET http://127.0.0.1:5000/api/v1.0/bucketlists?q=before%i%die&limit=20&page=1
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Response:
+{
+  "bucketlists": [
+    {
+      "app_bucketlist_items": [],
+      "created_by": 1,
+      "date_created": "2015-11-05T15:45:30.576000+00:00",
+      "date_modified": "2015-11-05T15:45:30.576000+00:00",
+      "id": 1,
+      "name": "Before I die"
+    }
+  ],
+  "current_page": 1,
+  "has_next_page": false,
+  "has_previous_page": false,
+  "total_objects": 1,
+  "total_pages": 1
+}
+```
+
+![get all bucketlists with query, limit and page with Postman](https://gyazo.com/61538d748a199bd7b409f881e34451b2.gif)
 ### Display Single Bucket List
 ```bash
 GET http://127.0.0.1:5000/api/v1.0/bucketlists/<int:id>
