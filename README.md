@@ -22,74 +22,144 @@ version: 1.0.0
 
 # User Guide
 ### Create A User
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/users | POST |   username, password | 
+```bash
+POST http://127.0.0.1:5000/api/v1.0/users
 
-
+Request Body:
+{
+    'username': 'kitty',
+    'password': 'wildcat',
+}
+```
 
 ![create a user with Postman](https://gyazo.com/048a496936c0da43e46543ff85d43dba.gif)
 
 ### Create A Token
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/auth/login | POST |   username, password | 
+```bash
+POST http://127.0.0.1:5000/api/v1.0/auth/login
 
+Request Body:
+{
+    'username': 'kitty',
+    'password': 'wildcat',
+}
+```
 ![get a token with Postman](https://gyazo.com/d23c8293f95e2207a870cd6405012cf5.gif)
 
 ### Create A Bucketlist
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists | POST |   name | token
+```bash
+POST http://127.0.0.1:5000/api/v1.0/bucketlists
 
-![get a token with Postman](https://gyazo.com/fe71f081a020a9f8cd222e0242a7848c.gif)
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Request Body:
+{
+    'name': 'Before I die',
+}
+```
+
+![create a bucketlist with Postman](https://gyazo.com/fe71f081a020a9f8cd222e0242a7848c.gif)
 
 ### Display All Bucketlists
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists | GET |    | token
+```bash
+GET http://127.0.0.1:5000/api/v1.0/bucketlists
 
-![get a all bucketlists with Postman](https://gyazo.com/342f0f3e927e3926e5675f2a533f6458.gif)
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+```
+
+![get all bucketlists with Postman](https://gyazo.com/342f0f3e927e3926e5675f2a533f6458.gif)
 
 ### Display Single Bucket List
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists/<int:id> | GET |    | token
+```bash
+GET http://127.0.0.1:5000/api/v1.0/bucketlists/<int:id>
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+```
 
 ![get a single bucketlist with Postman](https://gyazo.com/64dc9747140723a72577656e87b14c9d.gif)
 
 ### Update A Bucketlist
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>` | PUT | name  | token
+```bash
+PUT http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Request Body:
+{
+    'name': 'Before I live',
+}
+```
 
 ![update a bucketlist with Postman](https://gyazo.com/b07ef55c62e2dd79e3ede469c7529ae4.gif)
 
 ### Create A Bucketlist Item
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items | POST | name  | token
+```bash
+POST http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Request Body:
+{
+    'name': 'learn to program',
+}
+```
 
 ![create a bucketlist item with Postman](https://gyazo.com/009343bfa16ff9ce72b4e08d51b732e9.gif)
 
 ### Update A Bucketlist Item
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items/`<bucketlist_item_id>` | PUT | name, done=`<true|false>`  | token
+```bash
+PUT http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items/`<bucketlist_item_id>`
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+
+Request Body:
+{
+    'name': 'learn to dance',
+    'done': 'true'
+}
+```
 
 ![update a bucketlist item with Postman](https://gyazo.com/71967a8ba3827113b10309f1e64a5db1.gif)
 
 ### Delete A Bucketlist item
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items/`<bucketlist_item_id>` | DELETE |   | token
+```bash
+DELETE http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items/`<bucketlist_item_id>`
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+```
 
 ![delete a bucketlist item with Postman](https://gyazo.com/703bdf0856a763cff16448a43306b1a7.gif)
 
 ### Delete A Bucketlist
-URL                 |       HTTP METHOD        |    FORM DATA     |     HEADER DATA    
---------------------|--------------------------|------------------|----------------
-http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`/items/`<bucketlist_item_id>` | DELETE |   | token
+```bash
+DELETE http://127.0.0.1:5000/api/v1.0/bucketlists/`<bucketlist_id>`
+
+Request Header:
+{
+    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ0NjcyNjc3NiwiaWF0IjoxNDQ2NzI1NTc2fQ.eyJpZCI6MX0.uN8pUuUAhixYkmbNISsk5ruBZf6N6oSPd66K_c8dSvo'
+}
+```
 
 ![delete a bucketlist with Postman](https://gyazo.com/eae1197f708243dcc01b7036f9e90be3.gif)
 
