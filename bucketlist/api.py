@@ -150,13 +150,19 @@ class BucketLists(Resource):
 
         # set limit for pagination
         if 'limit' in request.args:
-            limit = int(request.args['limit'])
+            if request.args['limit'].isdigit():
+                limit = int(request.args['limit'])
+            else:
+                abort(400, message='limit parameter should be an integer')
         else:
             limit = 20
 
         # set page of pagination
         if 'page' in request.args:
-            page = int(request.args['page'])
+            if request.args['page'].isdigit():
+                page = int(request.args['page'])
+            else:
+                abort(400, message='page parameter should be an integer')
         else:
             page = 1
 
